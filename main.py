@@ -2,8 +2,9 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from typing import Optional
-import weaviate
 import bcrypt
+import weaviate
+from weaviate import WeaviateClient
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 import os
@@ -17,8 +18,12 @@ app = FastAPI()
 
 # Weaviate client setup
 WEAVIATE_URL = os.getenv("WEAVIATE_URL", "http://localhost:8080")
-client = weaviate.Client(WEAVIATE_URL)
+client = WeaviateClient(
+    url=WEAVIATE_URL,
+    auth_client_secret=None  # Add auth credentials if needed
+)
 
+client.connect()
 # JWT settings
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key")
 ALGORITHM = "HS256"
